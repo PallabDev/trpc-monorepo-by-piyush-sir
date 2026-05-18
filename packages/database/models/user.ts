@@ -9,14 +9,12 @@ import {
 
 export const usersTable = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
-
   fullName: varchar("full_name", { length: 80 }).notNull(),
-
   email: varchar("email", { length: 255 }).notNull().unique(),
   emailVerified: boolean("email_verified").default(false),
-
+  password:varchar("password", {length:255}),
+  salt:varchar("salt", {length:255}),
   profileImageUrl: text("profile_image_url"),
-
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").$onUpdate(() => new Date()),
 });
