@@ -22,9 +22,20 @@ export default function Home() {
     return (
 
         <main className="min-h-screen min-w-screen flex justify-center items-center">
-            <div>
-                <h1>Landing Page here</h1>
-            </div>
+            {isLoading ? (
+                <div className="flex flex-col items-center gap-4">
+                    <div className="w-12 h-12 border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin"></div>
+                    <p className="text-gray-600">Loading...</p>
+                </div>
+            ) : (
+                <div>
+                    <h2>Redirecting..</h2>
+                </div>
+            )}
         </main>
     );
 }
+
+
+"use client"
+import { trpc } from "~/trpc/client";
