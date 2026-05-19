@@ -18,6 +18,8 @@ import {
 } from "~/components/ui/field"
 import { Input } from "~/components/ui/input"
 import { useSignin } from "~/hooks/api/auth"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export type LoginFormValues = {
     email: string
@@ -28,6 +30,7 @@ export function LoginForm({
     className,
     ...props
 }: React.ComponentProps<"div">) {
+    const router = useRouter()
     const { register, handleSubmit } = useForm<LoginFormValues>({
         defaultValues: {
             email: "",
@@ -36,14 +39,18 @@ export function LoginForm({
     })
 
 
-    const { signInUserWithEmailAndPasswordAsync } = useSignin();
+    const { signInUserWithEmailAndPasswordAsync, error } = useSignin();
     async function handleLogin(values: LoginFormValues) {
         console.log(values)
         const { id } = await signInUserWithEmailAndPasswordAsync({
             email: values.email,
             password: values.password
         })
-        console.log(id)
+        if (!id) {
+            alert(error)
+        }
+        router.replace("/")
+
     }
 
     return (
@@ -88,7 +95,7 @@ export function LoginForm({
                             <Field>
                                 <Button type="submit">Login</Button>
                                 <FieldDescription className="text-center">
-                                    Don&apos;t have an account? <a href="#">Sign up</a>
+                                    Don&apos;t have an account? <Link href="/signup">Sign up</Link>
                                 </FieldDescription>
                             </Field>
                         </FieldGroup>
