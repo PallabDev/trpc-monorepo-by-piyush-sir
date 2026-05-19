@@ -1,16 +1,25 @@
 "use client"
 
-import { trpc } from "~/trpc/client";
-import { api } from "~/trpc/server";
+import { useEffect } from "react";
+import { useUser } from "~/hooks/api/auth";
+import { useRouter } from "next/navigation"
 
 
-export default  function Home() {
-    // const { status } = await api.health.getHealth.query();
-    const data= trpc.health.getHealth.useQuery()
+export default function Home() {
+    const router = useRouter();
+
+    const { user } = useUser();
+
+    useEffect(() => {
+        if (user) {
+            router.replace("/dashboard")
+        }
+    }, [user])
     return (
         <main className="min-h-screen min-w-screen flex justify-center items-center">
             <div>
-                <h2>{data.status}</h2>
+                <h1>Landing Page here</h1>
+
             </div>
         </main>
     );

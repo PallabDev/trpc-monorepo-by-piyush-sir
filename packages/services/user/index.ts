@@ -86,6 +86,39 @@ class UserService {
         }
 
     }
+
+    private async verifyUserToken(token: string) {
+        try {
+
+            const verificationResult = JWT.verify(token, env.JWT_SECRET) as generateUserTokenPayloadType
+            return verificationResult;
+        } catch (error) {
+            throw new Error(`Invalid Token`)
+        }
+    }
+
+    private async getUserInfoById(id: string) {
+        const [user] = await db.select({
+            id: usersTable.id,
+            email: usersTable.email,
+            fullName: usersTable.fullName,
+            profileImageUrl: usersTable.profileImageUrl
+
+        }).from(usersTable).where(eq(usersTable.id, id)).limit(1)
+        if (!user) throw new Error(`user with id ${id} does not exists`)
+        return user
+    }
+    public async verfiyAndDecodeUserByToken(token: string) {
+        const { id } = await this.verifyUserToken(token)
+        const userInfo = await this.getUserInfoById(id)
+        return {
+            id: userInfo.id,
+            email: userInfo.email,
+            fullName: userInfo.fullName,
+            profileImageUrl: userInfo.profileImageUrl
+        }
+    }
+
 }
 
 export default UserService
