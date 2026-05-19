@@ -1,27 +1,54 @@
 import { userService } from "../../services";
 import { publicProcedure, router } from "../../trpc";
+import { setAuthenticationCookies } from "../../utils/cookie";
 import { generatePath } from "../../utils/path-generator";
-import {createUserWithEmailAndPasswordInuptModel,CreateUserWithEmailAndPasswordOutputModel} from "./model"
+import {
+    createUserWithEmailAndPasswordInuptModel,
+    CreateUserWithEmailAndPasswordOutputModel,
+    signInUserWitEmailAndPasswordInputModel,
+    SignInUserWitEmailAndPasswordOutputModel
+} from "./model"
 const TAGS = ["Authentication"];
 const getPath = generatePath("/authentication");
 
 export const authRouter = router({
- createUserWithEmailAndPassword:publicProcedure.meta({
-  openapi:{
-    method:"POST",
-    path: getPath("/createUserWitEmailAndPassword"),
-    tags: TAGS
-  }
- })// not a trpc part
- .input(createUserWithEmailAndPasswordInuptModel)
- .output(CreateUserWithEmailAndPasswordOutputModel)
- .mutation(async ({input})=>{
-    const {fullName,email,password}=input;
-    const {id} = await userService.createUserWithEmailAndPassword({
-      fullName,email,password
+    createUserWithEmailAndPassword: publicProcedure.meta({
+        openapi: {
+            method: "POST",
+            path: getPath("/createUserWitEmailAndPassword"),
+            tags: TAGS
+        }
+    })// not a trpc part
+        .input(createUserWithEmailAndPasswordInuptModel)
+        .output(CreateUserWithEmailAndPasswordOutputModel)
+        .mutation(async ({ input, ctx }) => {
+            const { fullName, email, password } = input;
+            const { id, token } = await userService.createUserWithEmailAndPassword({
+                fullName, email, password
+            })
+            setAuthenticationCookies(ctx, token)
+            return {
+                id,
+                // token  we have to send this too if the client on not for web (like mobile devices)
+            }
+        }),
+
+    signInUserWithEmailAndPassword: publicProcedure.meta({
+        openapi: {
+            method: "POST",
+            path: getPath("/signInUserWitEmailAndPassword"),
+            tags: TAGS
+        }
+
     })
-    return {
-      id
-    }
- })
+        .input(signInUserWitEmailAndPasswordInputModel)
+        .output(SignInUserWitEmailAndPasswordOutputModel)
+        .mutation(async ({ input, ctx }) => {
+            const { email, password } = input
+            const { id, token } = await userService.signInUserWithEmailAndPassword({ email, password })
+            setAuthenticationCookies(ctx, token)
+            return {
+                id
+            }
+        })
 });

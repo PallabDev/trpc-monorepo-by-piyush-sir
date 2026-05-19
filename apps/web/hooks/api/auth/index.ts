@@ -1,9 +1,9 @@
 import { trpc } from "~/trpc/client"
 
-export const useSignup=()=>{
+export const useSignup = () => {
     const {
-        mutateAsync:createUserWithEmailAndPasswordAsync,
-        mutate:createUserWithEmailAndPassword,
+        mutateAsync: createUserWithEmailAndPasswordAsync,
+        mutate: createUserWithEmailAndPassword,
         error,
         failureCount,
         isError,
@@ -11,10 +11,35 @@ export const useSignup=()=>{
         isSuccess,
         status
 
-    }=trpc.auth.createUserWithEmailAndPassword.useMutation()
+    } = trpc.auth.createUserWithEmailAndPassword.useMutation()
     return {
         createUserWithEmailAndPasswordAsync,
         createUserWithEmailAndPassword,
+        error,
+        failureCount,
+        isError,
+        isIdle,
+        isSuccess,
+        status
+    }
+}
+
+
+export const useSignin = () => {
+    const {
+        mutateAsync: signInUserWithEmailAndPasswordAsync,
+        mutate: signInUserWithEmailAndPassword,
+        error,
+        failureCount,
+        isError,
+        isIdle,
+        isSuccess,
+        status
+
+    } = trpc.auth.signInUserWithEmailAndPassword.useMutation()
+    return {
+        signInUserWithEmailAndPasswordAsync,
+        signInUserWithEmailAndPassword,
         error,
         failureCount,
         isError,
